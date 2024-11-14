@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import bg from "../assets/bg.jpg";
+import formikValidationSchema from "../schemas/register.schema";
+import { Snackbar, Alert } from "@mui/material";
+
 import {
   Box,
   TextField,
@@ -24,6 +27,23 @@ import { Link } from "react-router-dom";
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { formik, isSuccess } = formikValidationSchema();
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
+  useEffect(() => {
+    if (isSuccess) {
+      setOpen(true);
+    }
+  }, [isSuccess]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleClickShowConfirmPassword = () =>
@@ -72,7 +92,19 @@ export default function Register() {
         backgroundImage: `url(${bg})`,
         backgroundSize: "cover",
       }}
+      component="form"
+      onSubmit={formik.handleSubmit}
     >
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          This is a success message!
+        </Alert>
+      </Snackbar>
       <Box
         sx={{
           display: "flex",
@@ -96,6 +128,7 @@ export default function Register() {
           }}
         >
           <TextField
+            name="firstname"
             label="First Name"
             variant="outlined"
             margin="normal"
@@ -108,9 +141,13 @@ export default function Register() {
                 ),
               },
             }}
-            onChange={(e) => console.log(e.target.value)}
+            value={formik.values.firstname}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.firstname && Boolean(formik.errors.firstname)}
           />
           <TextField
+            name="lastname"
             label="Last Name"
             variant="outlined"
             margin="normal"
@@ -123,8 +160,13 @@ export default function Register() {
                 ),
               },
             }}
+            value={formik.values.lastname}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.lastname && Boolean(formik.errors.lastname)}
           />
           <TextField
+            name="username"
             label="Username"
             variant="outlined"
             margin="normal"
@@ -137,8 +179,13 @@ export default function Register() {
                 ),
               },
             }}
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.username && Boolean(formik.errors.username)}
           />
           <TextField
+            name="email"
             label="Email"
             variant="outlined"
             margin="normal"
@@ -151,12 +198,17 @@ export default function Register() {
                 ),
               },
             }}
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.email && Boolean(formik.errors.email)}
           />
           <FormControl variant="outlined" margin="normal">
             <InputLabel htmlFor="outlined-adornment-password">
               Password
             </InputLabel>
             <OutlinedInput
+              name="password"
               id="outlined-adornment-password"
               type={showPassword ? "text" : "password"}
               endAdornment={
@@ -175,6 +227,10 @@ export default function Register() {
                 </InputAdornment>
               }
               label="Password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.password && Boolean(formik.errors.password)}
             />
           </FormControl>
           <FormControl variant="outlined" margin="normal">
@@ -182,6 +238,7 @@ export default function Register() {
               Confirm Password
             </InputLabel>
             <OutlinedInput
+              name="confirmPassword"
               id="outlined-adornment-password"
               type={showConfirmPassword ? "text" : "password"}
               endAdornment={
@@ -200,6 +257,13 @@ export default function Register() {
                 </InputAdornment>
               }
               label="Confirm Password"
+              value={formik.values.confirmPassword}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.confirmPassword &&
+                Boolean(formik.errors.confirmPassword)
+              }
             />
           </FormControl>
           <FormControlLabel
@@ -207,7 +271,7 @@ export default function Register() {
             control={<Checkbox />}
             label="I agree all terms"
           />
-          <ColorButton variant="contained" sx={{ width: "100%" }}>
+          <ColorButton variant="contained" sx={{ width: "100%" }} type="submit">
             Register
           </ColorButton>
         </FormGroup>
