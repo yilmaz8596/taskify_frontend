@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { Outlet } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import bg from "../assets/bg.jpg";
 import formikValidationSchema from "../schemas/register.schema";
 import { Snackbar, Alert } from "@mui/material";
@@ -28,7 +30,9 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [open, setOpen] = useState(false);
-  const { formik, isSuccess } = formikValidationSchema();
+
+  const { formik, isSuccess, isError, error } = formikValidationSchema();
+  const navigate = useNavigate();
 
   const handleClose = (
     event?: React.SyntheticEvent | Event,
@@ -37,13 +41,17 @@ export default function Register() {
     if (reason === "clickaway") {
       return;
     }
+    console.log(event);
+
     setOpen(false);
   };
   useEffect(() => {
-    if (isSuccess) {
+    if (isError) {
       setOpen(true);
+    } else if (isSuccess) {
+      navigate("/register/success");
     }
-  }, [isSuccess]);
+  }, [isError, isSuccess]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleClickShowConfirmPassword = () =>
@@ -282,6 +290,7 @@ export default function Register() {
           </Link>
         </span>
       </Box>
+      <Outlet />
     </Box>
   );
 }

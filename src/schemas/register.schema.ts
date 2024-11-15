@@ -15,7 +15,7 @@ const formikValidationSchema = () => {
     },
   });
 
-  const { isSuccess } = mutation;
+  const { isSuccess, isError, error } = mutation;
 
   const formik = useFormik({
     initialValues: {
@@ -46,7 +46,7 @@ const formikValidationSchema = () => {
       mutation.mutate(rest as RegisterUserValues);
     },
   });
-  return { formik, isSuccess };
+  return { formik, isSuccess, isError, error };
 };
 
 export default formikValidationSchema;

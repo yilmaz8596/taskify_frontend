@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Success from "./pages/Success";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import "@fontsource/sunflower";
@@ -21,7 +22,9 @@ export default function App() {
         <CssBaseline />
         <Router>
           <Routes>
-            <Route path="/register" element={<Register />} />
+            <Route path="/register" element={<Register />}>
+              <Route path="success" element={<Success />} />
+            </Route>
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
