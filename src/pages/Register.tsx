@@ -109,8 +109,12 @@ export default function Register() {
         onClose={handleClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
-        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-          This is a success message!
+        <Alert
+          onClose={handleClose}
+          severity={isError ? "error" : "success"}
+          sx={{ width: "100%" }}
+        >
+          {isError ? error?.message : "Registration successful"}
         </Alert>
       </Snackbar>
       <Box

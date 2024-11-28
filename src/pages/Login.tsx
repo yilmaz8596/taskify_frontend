@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import bg from "../assets/bg.jpg";
 import {
   Box,
@@ -12,17 +13,41 @@ import {
   Checkbox,
   FormControlLabel,
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff, GitHub } from "@mui/icons-material";
 import { MdEmail } from "react-icons/md";
 import Button, { ButtonProps } from "@mui/material/Button";
 import { styled } from "@mui/system";
 import { red } from "@mui/material/colors";
 import { FcGoogle } from "react-icons/fc";
-import { Facebook, X } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import { Snackbar, Alert } from "@mui/material";
+import { formikLoginValidationSchema } from "../schemas/login.schema";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  const { formik, isSuccess, isError } = formikLoginValidationSchema();
+
+  useEffect(() => {
+    if (isSuccess) {
+      setIsOpen(true);
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 3000);
+    }
+
+    if (isError) {
+      setIsOpen(true);
+      console.log("Error");
+    }
+  }, [isSuccess, navigate, isError]);
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -57,7 +82,14 @@ export default function Login() {
         backgroundImage: `url(${bg})`,
         backgroundSize: "cover",
       }}
+      component="form"
+      onSubmit={formik.handleSubmit}
     >
+      <Snackbar open={isOpen} autoHideDuration={6000} onClose={handleClose}>
+        <Alert severity={isSuccess ? "success" : "error"}>
+          {isSuccess ? "Login successful" : "Login failed"}
+        </Alert>
+      </Snackbar>
       <Box
         sx={{
           display: "flex",
@@ -81,7 +113,7 @@ export default function Login() {
           }}
         >
           <TextField
-            label="Email"
+            label="Username"
             variant="outlined"
             margin="normal"
             slotProps={{
@@ -93,6 +125,7 @@ export default function Login() {
                 ),
               },
             }}
+            {...formik.getFieldProps("username")}
           />
           <FormControl variant="outlined" margin="normal">
             <InputLabel htmlFor="outlined-adornment-password">
@@ -101,6 +134,7 @@ export default function Login() {
             <OutlinedInput
               id="outlined-adornment-password"
               type={showPassword ? "text" : "password"}
+              {...formik.getFieldProps("password")}
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
@@ -120,20 +154,17 @@ export default function Login() {
             />
           </FormControl>
           <FormControlLabel control={<Checkbox />} label="Remember me" />
-          <ColorButton variant="contained" sx={{ width: "100%" }}>
+          <ColorButton variant="contained" sx={{ width: "100%" }} type="submit">
             Login
           </ColorButton>
         </FormGroup>
         <div className="flex gap-1 items-center justify-start mt-12">
           <span>Or, Login with</span>
-          <IconButton aria-label="login with google">
+          <IconButton aria-label="google">
             <FcGoogle />
           </IconButton>
-          <IconButton aria-label="login with facebook">
-            <Facebook className="text-blue-600" />
-          </IconButton>
-          <IconButton aria-label="twitter">
-            <X className="text-black" />
+          <IconButton aria-label="github">
+            <GitHub className="text-black" />
           </IconButton>
         </div>
         <span className="mt-2">
