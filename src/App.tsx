@@ -7,7 +7,6 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import "@fontsource/sunflower";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 const theme = createTheme({
   typography: {
     fontFamily: "Sunflower, sans-serif",
