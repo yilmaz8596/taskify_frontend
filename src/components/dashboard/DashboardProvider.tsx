@@ -1,9 +1,10 @@
 import * as React from "react";
+import { useStore } from "../../store/store";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { AppProvider, type Navigation } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { useDemoRouter } from "@toolpad/core/internal";
-import { IconButton, Typography, CssBaseline } from "@mui/material";
+import { Box, IconButton, Typography, CssBaseline } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import TaskIcon from "@mui/icons-material/Task";
@@ -15,6 +16,7 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import LogoutRounded from "@mui/icons-material/LogoutRounded";
 
 import Dashboard from "./Dashboard";
 import VitalTasks from "./VitalTasks";
@@ -142,23 +144,35 @@ export default function DashboardProvider(props: DemoProps) {
 
   const theme = React.useMemo(() => getTheme(mode), [mode]);
 
+  const { logout } = useStore();
+
   const toggleColorMode = () => {
     setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
   };
 
   const ThemeToggle = () => (
-    <IconButton
-      onClick={toggleColorMode}
-      sx={{
-        position: "fixed",
-        right: 16,
-        top: 16,
-        zIndex: 2000,
-        color: theme.palette.text.primary,
-      }}
-    >
-      {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
-    </IconButton>
+    <Box sx={{ position: "fixed", right: 16, top: 16, zIndex: 2000 }}>
+      <IconButton
+        onClick={toggleColorMode}
+        sx={{
+          color: theme.palette.text.primary,
+          mr: 1,
+        }}
+      >
+        {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+      </IconButton>
+      <IconButton
+        onClick={() => {
+          // Add logout functionality here
+          console.log("Logout clicked");
+        }}
+        sx={{
+          color: theme.palette.text.primary,
+        }}
+      >
+        <LogoutRounded onClick={logout} />
+      </IconButton>
+    </Box>
   );
 
   return (

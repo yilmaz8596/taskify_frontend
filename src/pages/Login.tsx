@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useStore } from "../store/store";
 import bg from "../assets/bg.jpg";
 import {
   Box,
@@ -29,7 +30,8 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  const { formik, isSuccess, isError } = formikLoginValidationSchema();
+  const { formik, isSuccess, isError, data } = formikLoginValidationSchema();
+  const { login } = useStore();
 
   useEffect(() => {
     if (isSuccess) {
@@ -44,6 +46,21 @@ export default function Login() {
       console.log("Error");
     }
   }, [isSuccess, navigate, isError]);
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      login(data); // Store user data in Zustand
+      setIsOpen(true);
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 3000);
+    }
+
+    if (isError) {
+      setIsOpen(true);
+      console.error("Login failed");
+    }
+  }, [isSuccess, isError, data, login, navigate]);
 
   const handleClose = () => {
     setIsOpen(false);

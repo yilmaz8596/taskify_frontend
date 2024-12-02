@@ -14,6 +14,8 @@ export interface RegisterUserValues {
   password: string;
 }
 export interface LoginUserProps {
+  firstname: string;
+  lastname: string;
   username: string;
-  password: string;
+  email: string;
 }
