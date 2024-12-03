@@ -64,7 +64,7 @@ export default function Dashboard() {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2 }}>
+          <Paper sx={{ p: 2, height: "100%" }}>
             <Typography variant="h6" gutterBottom>
               Tasks Due Today
             </Typography>
@@ -81,9 +81,6 @@ export default function Dashboard() {
                 </React.Fragment>
               ))}
             </List>
-            <Button variant="outlined" startIcon={<AddIcon />} sx={{ mt: 2 }}>
-              Add Task
-            </Button>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -118,6 +115,48 @@ export default function Dashboard() {
               <Typography variant="body1">Completed Tasks: 400</Typography>
               <Typography variant="body1">Overdue Tasks: 50</Typography>
             </Box>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Upcoming Tasks
+            </Typography>
+            <List>
+              <ListItem>
+                <ListItemText
+                  primary="Prepare quarterly report"
+                  secondary="Due: Next week"
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary="Team building event"
+                  secondary="Due: In 2 weeks"
+                />
+              </ListItem>
+            </List>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Completed Tasks
+            </Typography>
+            <List>
+              <ListItem>
+                <ListItemText
+                  primary="Weekly team meeting"
+                  secondary="Completed: Yesterday"
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary="Client presentation"
+                  secondary="Completed: 2 days ago"
+                />
+              </ListItem>
+            </List>
           </Paper>
         </Grid>
       </Grid>

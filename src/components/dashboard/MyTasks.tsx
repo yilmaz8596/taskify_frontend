@@ -14,18 +14,31 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  IconButton,
+  MenuItem,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import IconButton from "@mui/material/IconButton";
-import MenuItem from "@mui/material/MenuItem";
+
 interface Task {
   id: number;
   title: string;
-  status: "Not Started" | "In Progress" | "Completed";
+  subtitle: string;
+  objective: string;
+  description: string;
+  category: {
+    priority: "Extreme" | "Moderate" | "Low";
+    status: "Pending" | "In Progress" | "Completed";
+    additionalFields: { [key: string]: string };
+  };
+  additionalNotes: string[];
   deadline: string;
+  userID: string;
 }
+
+const priorityLevels = ["Extreme", "Moderate", "Low"];
+const statusLevels = ["Pending", "In Progress", "Completed"];
 
 export default function MyTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -39,20 +52,52 @@ export default function MyTasks() {
         {
           id: 1,
           title: "Write documentation",
-          status: "In Progress",
+          subtitle: "API docs",
+          objective: "Improve developer experience",
+          description:
+            "Create comprehensive API documentation for the new features",
+          category: {
+            priority: "Moderate",
+            status: "In Progress",
+            additionalFields: {},
+          },
+          additionalNotes: [
+            "Include code examples",
+            "Add troubleshooting section",
+          ],
           deadline: "2023-07-10",
+          userID: "user123",
         },
         {
           id: 2,
           title: "Fix bug in login system",
-          status: "Not Started",
+          subtitle: "Authentication issue",
+          objective: "Enhance security",
+          description:
+            "Resolve the issue with token expiration in the login system",
+          category: {
+            priority: "Extreme",
+            status: "Pending",
+            additionalFields: {},
+          },
+          additionalNotes: ["Check token refresh mechanism"],
           deadline: "2023-07-15",
+          userID: "user123",
         },
         {
           id: 3,
           title: "Design new feature mockup",
-          status: "Completed",
+          subtitle: "User dashboard",
+          objective: "Improve user experience",
+          description: "Create mockups for the new user dashboard layout",
+          category: {
+            priority: "Low",
+            status: "Completed",
+            additionalFields: {},
+          },
+          additionalNotes: [],
           deadline: "2023-07-05",
+          userID: "user123",
         },
       ]);
     }, 1000);
@@ -74,11 +119,22 @@ export default function MyTasks() {
     const newTask: Task = {
       id: currentTask ? currentTask.id : Date.now(),
       title: formData.get("title") as string,
-      status: formData.get("status") as
-        | "Not Started"
-        | "In Progress"
-        | "Completed",
+      subtitle: formData.get("subtitle") as string,
+      objective: formData.get("objective") as string,
+      description: formData.get("description") as string,
+      category: {
+        priority: formData.get("priority") as "Extreme" | "Moderate" | "Low",
+        status: formData.get("status") as
+          | "Pending"
+          | "In Progress"
+          | "Completed",
+        additionalFields: {},
+      },
+      additionalNotes: (formData.get("additionalNotes") as string)
+        .split("\n")
+        .filter((note) => note.trim() !== ""),
       deadline: formData.get("deadline") as string,
+      userID: "user123", // This should be dynamically set based on the logged-in user
     };
 
     if (currentTask) {
@@ -111,22 +167,38 @@ export default function MyTasks() {
         {tasks.map((task) => (
           <ListItem key={task.id} disablePadding>
             <ListItemIcon>
-              <Checkbox edge="start" checked={task.status === "Completed"} />
+              <Checkbox
+                edge="start"
+                checked={task.category.status === "Completed"}
+              />
             </ListItemIcon>
             <ListItemText
               primary={task.title}
-              secondary={`Deadline: ${task.deadline}`}
+              secondary={`${task.subtitle} | Deadline: ${task.deadline}`}
             />
             <Chip
-              label={task.status}
+              label={task.category.status}
               color={
-                task.status === "Completed"
+                task.category.status === "Completed"
                   ? "success"
-                  : task.status === "In Progress"
+                  : task.category.status === "In Progress"
                     ? "warning"
                     : "default"
               }
               size="small"
+              sx={{ mr: 1 }}
+            />
+            <Chip
+              label={task.category.priority}
+              color={
+                task.category.priority === "Extreme"
+                  ? "error"
+                  : task.category.priority === "Moderate"
+                    ? "warning"
+                    : "success"
+              }
+              size="small"
+              sx={{ mr: 1 }}
             />
             <IconButton onClick={() => handleOpenDialog(task)}>
               <EditIcon />
@@ -137,7 +209,12 @@ export default function MyTasks() {
           </ListItem>
         ))}
       </List>
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>{currentTask ? "Edit Task" : "Add New Task"}</DialogTitle>
         <form onSubmit={handleSaveTask}>
           <DialogContent>
@@ -151,17 +228,76 @@ export default function MyTasks() {
               defaultValue={currentTask?.title || ""}
             />
             <TextField
+              margin="dense"
+              name="subtitle"
+              label="Subtitle"
+              type="text"
+              fullWidth
+              defaultValue={currentTask?.subtitle || ""}
+            />
+            <TextField
+              margin="dense"
+              name="objective"
+              label="Objective"
+              type="text"
+              fullWidth
+              defaultValue={currentTask?.objective || ""}
+            />
+            <TextField
+              margin="dense"
+              name="description"
+              label="Description"
+              type="text"
+              fullWidth
+              multiline
+              rows={4}
+              defaultValue={currentTask?.description || ""}
+            />
+            <TextField
+              select
+              margin="dense"
+              name="priority"
+              label="Priority"
+              fullWidth
+              defaultValue={currentTask?.category.priority || "Low"}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            >
+              {priorityLevels.map((level) => (
+                <MenuItem key={level} value={level}>
+                  {level}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
               select
               margin="dense"
               name="status"
               label="Status"
               fullWidth
-              defaultValue={currentTask?.status || "Not Started"}
+              defaultValue={currentTask?.category.status || "Pending"}
+              InputLabelProps={{
+                shrink: true,
+              }}
             >
-              <MenuItem value="Not Started">Not Started</MenuItem>
-              <MenuItem value="In Progress">In Progress</MenuItem>
-              <MenuItem value="Completed">Completed</MenuItem>
+              {statusLevels.map((level) => (
+                <MenuItem key={level} value={level}>
+                  {level}
+                </MenuItem>
+              ))}
             </TextField>
+            <TextField
+              margin="dense"
+              name="additionalNotes"
+              label="Additional Notes"
+              type="text"
+              fullWidth
+              multiline
+              rows={4}
+              defaultValue={currentTask?.additionalNotes.join("\n") || ""}
+              helperText="Enter each note on a new line"
+            />
             <TextField
               margin="dense"
               name="deadline"
